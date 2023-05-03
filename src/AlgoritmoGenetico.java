@@ -3,9 +3,9 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class AlgoritmoGenetico {
-    private static final int LONGITUD_CROMOSOMA = 11; // 1 mas para el fitness
-    private static final int PORCENTAJE_ELITE_SIGUIENTE_GENERACION = 10; // 1 mas para el fitness
-    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 10; // NUMERO DE INDIVIDUOS QUE MUTAREMOS
+    private static final int LONGITUD_CROMOSOMA = 11; // CANTIDAD DE GENES DE UN INDIVIDUO + 1 ESPACIO PARA EL FITNESS
+    private static final int PORCENTAJE_ELITE_SIGUIENTE_GENERACION = 10; //PORCENTAJE DE INDIVIDUOS QUE TOMAREMOS COMO ELITE, POR SU  MEJOR FITNESS
+    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 10; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
     private static final int NUM_GENES_MUTAR = 1; // NUMERO DE GENES QUE MUTAREMOS EN CADA CROMOSOMA
     private static boolean solucion_encontrada = false;
     private static int individuo_solucion = 0;
@@ -14,7 +14,7 @@ public class AlgoritmoGenetico {
     //CANTIDAD DE ENTEROS QUE PODRA TENER UN GEN DE 1 A X
     private static final int NUM_VARIACION_GENES = 100;
    // private static final int[] CODIGO_OBJETIVO = {27, 89, 1, 87, 99, 45, 67, 19, 9, 5};
-    private static final int[] CODIGO_OBJETIVO = {0, 99, 3, 0, 98, 99, 7, 8, 97, 99};
+    private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     //ERROR:  REVISAR POR QUE CON ELEMENTO 99 NO ENCUENTRA SOLUCION
     public static int calcularFitness(int[] cromosoma) {
         Integer fitness = 10; //numero de cifras que difieren del objetivo
@@ -68,8 +68,8 @@ public class AlgoritmoGenetico {
         int[][] nuevaPoblacion = new int[ELEMENTOS_POBLACION][LONGITUD_CROMOSOMA];
         Random rnd = new Random();
         int idx = 0;
-        int numElite = ELEMENTOS_POBLACION / 10;
-        int numNoElite = ELEMENTOS_POBLACION - numElite;
+       // int numElite = ELEMENTOS_POBLACION / 10;
+        //int numNoElite = ELEMENTOS_POBLACION - numElite;
 
         //recorre los individuos ELITE uno a uno
         //RECORREMOS CADA UNO DE LOS INDIV. ELITE Y LOS METEMOS EN ARRAY NUEVAPOBLACION
@@ -89,16 +89,16 @@ public class AlgoritmoGenetico {
             //TOMAMOS UN CROMOSOMA ELITE AL AZAR
             int cromosomaPadre[] = seleccionados[rnd.nextInt(seleccionados.length)];
             //TOMAMOS EL CROMOSOMA HIJO A MEZCLAR CON ELITE
-            int cromosomaHijo[] = poblacion[idx];
+           // int cromosomaHijo[] = poblacion[idx];
 
             //MEZCLAMOS PADRE E HIJO, padre tiene mayor peso que es ELITE
-            int hijo[] = new int[LONGITUD_CROMOSOMA];
+            int hijo[];
            // int puntoCorte = LONGITUD_CROMOSOMA / 2;
 
             //nos quedaremos a veces con los 5 primeros genes
             //y otras con los 5 ultimos genes
-            int inicio = rnd.nextInt(1);
-            int fin = 0;
+            int inicio = rnd.nextInt(2); //booleano que controla si tomamos los 5 primeros o los 5 ultimos del padre
+            int fin;
             if (inicio==0){
                 inicio = 0;
                 fin = LONGITUD_CROMOSOMA/2;
@@ -130,11 +130,12 @@ public class AlgoritmoGenetico {
         double elementos_mutar = poblacion.length * (double) PORCENTAJE_INDIVIDUOS_MUTAR / ELEMENTOS_POBLACION;
         int elem_mutar = (int) elementos_mutar;
         int contador = 1;
-        elementos_mutar = (int) (elementos_mutar);
+        //elementos_mutar = (int) (elementos_mutar);
         // for (int i= poblacion.length; i>=0;i++){
-        Random r = new Random();
-        int individuo = 0;
-        while (contador <= elem_mutar) {
+        //Random r = new Random();
+        int individuo;
+        while (contador <= elem_mutar) {//RECORREMOS EL NUMERO DE INDIVIDUOS A MUTAR SEGUN PORCENTAJE_INDIVIDUOS_MUTAR
+            //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE LA POBLACION NO ELITE
             individuo = (int) (Math.random() * (poblacion.length - elem_mutar)) + elem_mutar;
             //elegimos individuo al azar dentro de los seleccionados a mutar
             for (int i = 0; i < NUM_GENES_MUTAR; i++) {
@@ -165,25 +166,25 @@ public class AlgoritmoGenetico {
         int iteraciones = 1;
         solucion_encontrada = false;
 
-        while (iteraciones <= MAX_ITERACIONES && solucion_encontrada == false) {
+        while (iteraciones <= MAX_ITERACIONES && !solucion_encontrada) {
 
             // Calcular y rellenar el fitness para cada individuo
             for (int i = 0; i < ELEMENTOS_POBLACION; i++) {
                 //   VectorConFitness[i] = calcularFitness(poblacion[i]);
                 poblacion[i][LONGITUD_CROMOSOMA - 1] = calcularFitness(poblacion[i]);
-                if (solucion_encontrada == true) {
+                if (solucion_encontrada) {
                     individuo_solucion = i;
                     break;
                 }
             }
 
-            if (solucion_encontrada == false) {
+            if (!solucion_encontrada) {
                 poblacion = ordenarPorUltimaColumna(poblacion);
                 //Creamos siguiente generacion cruzando el 10% de la elite con el resto
                 poblacion = generarSiguienteGeneracion(poblacion);
 
                 // Calcular el fitness para cada cromosoma
-                for (int i = 0; i < ELEMENTOS_POBLACION && solucion_encontrada == false; i++) {
+                for (int i = 0; i < ELEMENTOS_POBLACION && !solucion_encontrada; i++) {
                     //   VectorConFitness[i] = calcularFitness(poblacion[i]);
                     poblacion[i][LONGITUD_CROMOSOMA - 1] = calcularFitness(poblacion[i]);
                 }
@@ -197,14 +198,14 @@ public class AlgoritmoGenetico {
                 iteraciones += 1;
             }
         }
-            if (solucion_encontrada == true) {
+            if (solucion_encontrada) {
                 //Mostrar POBLACION ORDENADA POR FITNESS
                 System.out.println("POBLACION FINAL CON INDIVIDUO/S SOLUCION : ");
                 mostrarPoblacion(poblacion);
             }
 
 
-            System.out.println ("");
+           // System.out.println ("");
             System.out.println("SOLUCION ENCONTRADA : " + solucion_encontrada);
             System.out.println("NÚMERO DE ITERACIONES MAXIMA: " + MAX_ITERACIONES);
             System.out.println("NÚMERO DE ITERACIONES REALIZADAS: " + iteraciones);
