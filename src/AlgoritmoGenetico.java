@@ -133,6 +133,7 @@ public class AlgoritmoGenetico {
         //elementos_mutar = (int) (elementos_mutar);
         // for (int i= poblacion.length; i>=0;i++){
         //Random r = new Random();
+
         int individuo;
         while (contador <= elem_mutar) {//RECORREMOS EL NUMERO DE INDIVIDUOS A MUTAR SEGUN PORCENTAJE_INDIVIDUOS_MUTAR
             //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE LA POBLACION NO ELITE
