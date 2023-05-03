@@ -12,7 +12,7 @@ public class AlgoritmoGenetico {
     private static final int NUM_GENES_MUTAR = 1; // NUMERO DE GENES QUE MUTAREMOS EN CADA CROMOSOMA
     private static boolean solucion_encontrada = false;
     private static int individuo_solucion = 0;
-    private static final int MAX_ITERACIONES = 10000;
+    private static final int MAX_ITERACIONES = 100;
        // private static final int[] CODIGO_OBJETIVO = {27, 89, 1, 87, 99, 45, 67, 19, 9, 5};
     public static int calcularFitness(int[] cromosoma) {
         Integer fitness = 10; //numero de cifras que difieren del objetivo
@@ -122,25 +122,22 @@ public class AlgoritmoGenetico {
             //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE LA POBLACION NO ELITE
             individuo = (int) (Math.random() * (poblacion.length - elem_mutar)) + elem_elite; //SELECCIONAMOS EL INDIVIDUO AL AZAR
             for (int i = 0; i < NUM_GENES_MUTAR; i++) { //LO REPETIMOS CON CADA GEN A MUTAR
-                int gen = (int) (Math.random() * LONGITUD_CROMOSOMA - 1); //TOMAMOS GEN AL AZAR
-                int valor = (int) (Math.random() * (NUM_VARIACION_GENES+1));
+                int gen = (int) (Math.random() * LONGITUD_CROMOSOMA - 1); //TOMAMOS 1 GEN AL AZAR que cambiaremos
+                int valor = (int) (Math.random() * (NUM_VARIACION_GENES+1)); //VALOR POR EL QUE SUSTITUIREMOS EL GEN, CUALQUIERA DENTRO DE LOS POSIBLES
                 poblacion[individuo][gen] = valor;
             }
             contador = contador + 1;
         }
-
         return poblacion;
     }
 
     public static void main(String[] args) {
-
         int[][] poblacion = new int[ELEMENTOS_POBLACION][LONGITUD_CROMOSOMA];
-
-        //Crear primera generacion de poblacion de ELEMENTOS_POBLACION
+        //CREAMOS PRIMERA GENERACION DE POBLACION ALEATORIAMENTE
         for (int i = 0; i < ELEMENTOS_POBLACION; i++) {
             for (int j = 0; j < LONGITUD_CROMOSOMA - 1; j++) {
                 Random rd = new Random();
-                poblacion[i][j] = rd.nextInt(NUM_VARIACION_GENES);
+                poblacion[i][j] = rd.nextInt(NUM_VARIACION_GENES+1);
             }
         }
 
@@ -150,11 +147,9 @@ public class AlgoritmoGenetico {
         solucion_encontrada = false;
 
         while (iteraciones <= MAX_ITERACIONES && !solucion_encontrada) {
-
-            // Calcular y rellenar el fitness para cada individuo
-            for (int i = 0; i < ELEMENTOS_POBLACION; i++) {
-                //   VectorConFitness[i] = calcularFitness(poblacion[i]);
-                poblacion[i][LONGITUD_CROMOSOMA - 1] = calcularFitness(poblacion[i]);
+            // 1.- CALCULAMOS EL FITNESS PARA CADA INDIVIDUO Y LO METEMOS EN LA ULTIMA POSICION DEL VECTOR
+            for (int i = 0; i < ELEMENTOS_POBLACION; i++) { //RECORREMOS TODOS LOS INDIVIDUOS
+                poblacion[i][LONGITUD_CROMOSOMA - 1] = calcularFitness(poblacion[i]); //LLAMAMOS A LA FUNCION QUE CALCULA EL FITNESS
                 if (solucion_encontrada) {
                     individuo_solucion = i;
                     break;
@@ -162,38 +157,51 @@ public class AlgoritmoGenetico {
             }
 
             if (!solucion_encontrada) {
+                // 2.- ORDENAMOS LA POBLACION SEGUN SU FITNESS
                 poblacion = ordenarPorUltimaColumna(poblacion);
-                //Creamos siguiente generacion cruzando el 10% de la elite con el resto
+
+                // 3.- CREAMOS SIGUIENTE GENERACION CRUZANDO LA ELITE CON EL RESTO DE POBLACION
                 poblacion = generarSiguienteGeneracion(poblacion);
 
-                // Calcular el fitness para cada cromosoma
+                // 4.- CALCULAMOS FITNESS PARA ESTA NUEVA GENERACION
                 for (int i = 0; i < ELEMENTOS_POBLACION && !solucion_encontrada; i++) {
                     //   VectorConFitness[i] = calcularFitness(poblacion[i]);
                     poblacion[i][LONGITUD_CROMOSOMA - 1] = calcularFitness(poblacion[i]);
                 }
-                poblacion = ordenarPorUltimaColumna(poblacion);
-                //mostrarPoblacion(poblacion);
 
-                //MUTAMOS LA POBLACION
+                // 5.- ORDENAMOS LA POBLACION SEGUN SU FITNESS
+                poblacion = ordenarPorUltimaColumna(poblacion);
+
+                // 6.- MUTAMOS LA POBLACION, CAMBIAMOS ALGUN GEN DE LA POBLACION NO ELITE
                 poblacion = mutarPoblacion(poblacion);
+
+                // 7.- ORDENAMOS LA POBLACION SEGUN SU FITNESS
                 poblacion = ordenarPorUltimaColumna(poblacion);
 
-                iteraciones += 1;
+                iteraciones += 1; //NUEVA ITERACION
             }
         }
-            if (solucion_encontrada) {
+
+        if (solucion_encontrada) {
                 //Mostrar POBLACION ORDENADA POR FITNESS
                 System.out.println("POBLACION FINAL CON INDIVIDUO/S SOLUCION : ");
+                System.out.println();
                 mostrarPoblacion(poblacion);
+                System.out.println("SOLUCION ENCONTRADA : " + solucion_encontrada);
+                System.out.println("NÚMERO DE ITERACIONES MAXIMA: " + MAX_ITERACIONES);
+                System.out.println("NÚMERO DE ITERACIONES REALIZADAS: " + iteraciones);
+                System.out.println("INDIVIDUO SOLUCION : " + individuo_solucion);
             }
-
-
-           // System.out.println ("");
-            System.out.println("SOLUCION ENCONTRADA : " + solucion_encontrada);
+        else {
+            System.out.println("POBLACION FINAL SIN INDIVIDUO SOLUCION : ");
+            System.out.println();
+            mostrarPoblacion(poblacion);
+            System.out.println();
+            System.out.println("SOLUCION NO ENCONTRADA");
             System.out.println("NÚMERO DE ITERACIONES MAXIMA: " + MAX_ITERACIONES);
             System.out.println("NÚMERO DE ITERACIONES REALIZADAS: " + iteraciones);
-            System.out.println("INDIVIDUO SOLUCION : " + individuo_solucion);
-
         }
 
     }
+}
+
