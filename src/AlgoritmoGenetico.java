@@ -3,19 +3,17 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class AlgoritmoGenetico {
+    private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; //CODIGO PREFIJADO A ENCONTRAR
+    private static final int NUM_VARIACION_GENES = 100; //VARIEDAD DE ENTEROS QUE PODRA TENER UN GEN, INCLUIDO EL 0
+    private static final int ELEMENTOS_POBLACION = 100; //NUMERO DE INDIVIDUOS QUE FORMAN LA POBLACION TOTAL
     private static final int LONGITUD_CROMOSOMA = 11; // CANTIDAD DE GENES DE UN INDIVIDUO + 1 ESPACIO PARA EL FITNESS
     private static final int PORCENTAJE_ELITE_SIGUIENTE_GENERACION = 10; //PORCENTAJE DE INDIVIDUOS QUE TOMAREMOS COMO ELITE, POR SU  MEJOR FITNESS
     private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 10; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
     private static final int NUM_GENES_MUTAR = 1; // NUMERO DE GENES QUE MUTAREMOS EN CADA CROMOSOMA
     private static boolean solucion_encontrada = false;
     private static int individuo_solucion = 0;
-    private static final int ELEMENTOS_POBLACION = 100;
     private static final int MAX_ITERACIONES = 10000;
-    //CANTIDAD DE ENTEROS QUE PODRA TENER UN GEN DE 1 A X
-    private static final int NUM_VARIACION_GENES = 100;
-   // private static final int[] CODIGO_OBJETIVO = {27, 89, 1, 87, 99, 45, 67, 19, 9, 5};
-    private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    //ERROR:  REVISAR POR QUE CON ELEMENTO 99 NO ENCUENTRA SOLUCION
+       // private static final int[] CODIGO_OBJETIVO = {27, 89, 1, 87, 99, 45, 67, 19, 9, 5};
     public static int calcularFitness(int[] cromosoma) {
         Integer fitness = 10; //numero de cifras que difieren del objetivo
         for (int j = 0; j < LONGITUD_CROMOSOMA - 1; j++) {
@@ -68,10 +66,7 @@ public class AlgoritmoGenetico {
         int[][] nuevaPoblacion = new int[ELEMENTOS_POBLACION][LONGITUD_CROMOSOMA];
         Random rnd = new Random();
         int idx = 0;
-       // int numElite = ELEMENTOS_POBLACION / 10;
-        //int numNoElite = ELEMENTOS_POBLACION - numElite;
 
-        //recorre los individuos ELITE uno a uno
         //RECORREMOS CADA UNO DE LOS INDIV. ELITE Y LOS METEMOS EN ARRAY NUEVAPOBLACION
         for (int i = 0; i < numSeleccionados; i++) {
             int[] padre = seleccionados[i]; //
@@ -88,12 +83,9 @@ public class AlgoritmoGenetico {
 
             //TOMAMOS UN CROMOSOMA ELITE AL AZAR
             int cromosomaPadre[] = seleccionados[rnd.nextInt(seleccionados.length)];
-            //TOMAMOS EL CROMOSOMA HIJO A MEZCLAR CON ELITE
-           // int cromosomaHijo[] = poblacion[idx];
 
             //MEZCLAMOS PADRE E HIJO, padre tiene mayor peso que es ELITE
             int hijo[];
-           // int puntoCorte = LONGITUD_CROMOSOMA / 2;
 
             //nos quedaremos a veces con los 5 primeros genes
             //y otras con los 5 ultimos genes
@@ -118,30 +110,20 @@ public class AlgoritmoGenetico {
     }
 
     static public int[][] mutarPoblacion(int[][] poblacion) {
-        //hacemos un cambio pequeño
-        //alteramos al azar un individuo de forma pequeña
-        //mutaremos un numero pequeño de genes
-        //A CADA INDIVIDUO SE LE DA UNA PROBABILIDAD DE MUTACION
-        //SEGUN ESA PROBABILIDAD EL INDIVIDUO ES MUTADO O NO
-
-        //MUTAREMOS EL % INDICADO EN LA CONSTANTE
-        //DE LOS CROMOSOMAS CON PEOR FITNESS
 
         double elementos_mutar = poblacion.length * (double) PORCENTAJE_INDIVIDUOS_MUTAR / ELEMENTOS_POBLACION;
         int elem_mutar = (int) elementos_mutar;
         int contador = 1;
-        //elementos_mutar = (int) (elementos_mutar);
-        // for (int i= poblacion.length; i>=0;i++){
-        //Random r = new Random();
+        double elementos_elite = poblacion.length * (double) PORCENTAJE_ELITE_SIGUIENTE_GENERACION / ELEMENTOS_POBLACION;
+        int elem_elite = (int)elementos_elite;
 
         int individuo;
         while (contador <= elem_mutar) {//RECORREMOS EL NUMERO DE INDIVIDUOS A MUTAR SEGUN PORCENTAJE_INDIVIDUOS_MUTAR
             //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE LA POBLACION NO ELITE
-            individuo = (int) (Math.random() * (poblacion.length - elem_mutar)) + elem_mutar;
-            //elegimos individuo al azar dentro de los seleccionados a mutar
-            for (int i = 0; i < NUM_GENES_MUTAR; i++) {
-                int gen = (int) (Math.random() * LONGITUD_CROMOSOMA - 1);
-                int valor = (int) (Math.random() * (NUM_VARIACION_GENES));
+            individuo = (int) (Math.random() * (poblacion.length - elem_mutar)) + elem_elite; //SELECCIONAMOS EL INDIVIDUO AL AZAR
+            for (int i = 0; i < NUM_GENES_MUTAR; i++) { //LO REPETIMOS CON CADA GEN A MUTAR
+                int gen = (int) (Math.random() * LONGITUD_CROMOSOMA - 1); //TOMAMOS GEN AL AZAR
+                int valor = (int) (Math.random() * (NUM_VARIACION_GENES+1));
                 poblacion[individuo][gen] = valor;
             }
             contador = contador + 1;
