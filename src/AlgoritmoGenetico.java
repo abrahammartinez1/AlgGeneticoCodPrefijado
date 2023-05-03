@@ -3,19 +3,21 @@ import java.util.Comparator;
 import java.util.Random;
 
 public class AlgoritmoGenetico {
-    private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; //CODIGO PREFIJADO A ENCONTRAR
+    private static final int MAX_ITERACIONES = 5000; //NUMERO MÁXIMO DE ITERACIONES
+    private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+    //private static final int[] CODIGO_OBJETIVO = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+    //CODIGO PREFIJADO A ENCONTRAR
     private static final int NUM_VARIACION_GENES = 100; //VARIEDAD DE ENTEROS QUE PODRA TENER UN GEN, INCLUIDO EL 0
-    private static final int ELEMENTOS_POBLACION = 100; //NUMERO DE INDIVIDUOS QUE FORMAN LA POBLACION TOTAL
-    private static final int LONGITUD_CROMOSOMA = 11; // CANTIDAD DE GENES DE UN INDIVIDUO + 1 ESPACIO PARA EL FITNESS
+    private static final int ELEMENTOS_POBLACION = 1000; //NUMERO DE INDIVIDUOS QUE FORMAN LA POBLACION TOTAL
+    private static final int LONGITUD_CROMOSOMA = 31; // CANTIDAD DE GENES DE UN INDIVIDUO + 1 ESPACIO PARA EL FITNESS
     private static final int PORCENTAJE_ELITE_SIGUIENTE_GENERACION = 10; //PORCENTAJE DE INDIVIDUOS QUE TOMAREMOS COMO ELITE, POR SU  MEJOR FITNESS
-    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 10; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
+    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 50; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
     private static final int NUM_GENES_MUTAR = 1; // NUMERO DE GENES QUE MUTAREMOS EN CADA CROMOSOMA
     private static boolean solucion_encontrada = false;
     private static int individuo_solucion = 0;
-    private static final int MAX_ITERACIONES = 100;
-       // private static final int[] CODIGO_OBJETIVO = {27, 89, 1, 87, 99, 45, 67, 19, 9, 5};
+
     public static int calcularFitness(int[] cromosoma) {
-        Integer fitness = 10; //numero de cifras que difieren del objetivo
+        Integer fitness = LONGITUD_CROMOSOMA-1; //numero de cifras que difieren del objetivo, INICIALMENTE TODAS
         for (int j = 0; j < LONGITUD_CROMOSOMA - 1; j++) {
             if (cromosoma[j] == CODIGO_OBJETIVO[j]) {
                 fitness = fitness - 1;
