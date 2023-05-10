@@ -11,7 +11,7 @@ public class AlgoritmoGenetico {
     private static final int ELEMENTOS_POBLACION = 1000; //NUMERO DE INDIVIDUOS QUE FORMAN LA POBLACION TOTAL
     private static final int LONGITUD_CROMOSOMA = 31; // CANTIDAD DE GENES DE UN INDIVIDUO + 1 ESPACIO PARA EL FITNESS
     private static final int PORCENTAJE_ELITE_SIGUIENTE_GENERACION = 10; //PORCENTAJE DE INDIVIDUOS QUE TOMAREMOS COMO ELITE, POR SU  MEJOR FITNESS
-    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 50; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
+    private static final int PORCENTAJE_INDIVIDUOS_MUTAR = 10; // PORCENTAJE DE INDIVIDUOS DEL TOTAL QUE MUTAREMOS
     private static final int NUM_GENES_MUTAR = 1; // NUMERO DE GENES QUE MUTAREMOS EN CADA CROMOSOMA
     private static boolean solucion_encontrada = false;
     private static int individuo_solucion = 0;
@@ -114,15 +114,15 @@ public class AlgoritmoGenetico {
     static public int[][] mutarPoblacion(int[][] poblacion) {
 
         double elementos_mutar = poblacion.length * (double) PORCENTAJE_INDIVIDUOS_MUTAR / ELEMENTOS_POBLACION;
-        int elem_mutar = (int) elementos_mutar;
+        int elem_mutar = ELEMENTOS_POBLACION * (int) elementos_mutar / 100;
         int contador = 1;
         double elementos_elite = poblacion.length * (double) PORCENTAJE_ELITE_SIGUIENTE_GENERACION / ELEMENTOS_POBLACION;
-        int elem_elite = (int)elementos_elite;
+       // int elem_elite = (int)elementos_elite;
 
         int individuo;
         while (contador <= elem_mutar) {//RECORREMOS EL NUMERO DE INDIVIDUOS A MUTAR SEGUN PORCENTAJE_INDIVIDUOS_MUTAR
-            //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE LA POBLACION NO ELITE
-            individuo = (int) (Math.random() * (poblacion.length - elem_mutar)) + elem_elite; //SELECCIONAMOS EL INDIVIDUO AL AZAR
+            //ELEGIMOS INDIVIDUOS A MUTAR DE ENTRE TODA LA POBLACION
+            individuo = (int) (Math.random() * (poblacion.length - elem_mutar)); //SELECCIONAMOS EL INDIVIDUO AL AZAR
             for (int i = 0; i < NUM_GENES_MUTAR; i++) { //LO REPETIMOS CON CADA GEN A MUTAR
                 int gen = (int) (Math.random() * LONGITUD_CROMOSOMA - 1); //TOMAMOS 1 GEN AL AZAR que cambiaremos
                 int valor = (int) (Math.random() * (NUM_VARIACION_GENES+1)); //VALOR POR EL QUE SUSTITUIREMOS EL GEN, CUALQUIERA DENTRO DE LOS POSIBLES
@@ -174,7 +174,7 @@ public class AlgoritmoGenetico {
                 // 5.- ORDENAMOS LA POBLACION SEGUN SU FITNESS
                 poblacion = ordenarPorUltimaColumna(poblacion);
 
-                // 6.- MUTAMOS LA POBLACION, CAMBIAMOS ALGUN GEN DE LA POBLACION NO ELITE
+                // 6.- MUTAMOS LA POBLACION, CAMBIAMOS ALGUN GEN DE CADA INDIVIDUO DE TODA LA POBLACION
                 poblacion = mutarPoblacion(poblacion);
 
                 // 7.- ORDENAMOS LA POBLACION SEGUN SU FITNESS
